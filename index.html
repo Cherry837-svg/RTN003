@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Блокнот</title>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+    <style>
+        :root { --color-dark: #634724; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: radial-gradient(circle, rgba(0,0,0,0) 70%, rgba(0,0,0,0.3) 100%), 
+                        url('https://transparenttextures.com'), #9B794A;
+            background-attachment: fixed; color: var(--color-dark);
+            display: flex; flex-direction: column; min-height: 100vh; padding: 2px; 
+        }
+        .editor-container {
+            width: 100%; flex-grow: 1; display: flex; flex-direction: column;
+            background: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25));
+            border: none; box-shadow: inset 0 0 30px rgba(0,0,0,0.15); overflow: hidden;
+        }
+        textarea {
+            width: 100%; height: 100%; flex-grow: 1; padding: 15px; border: none; outline: none;
+            resize: none; font-size: 1.8rem; line-height: 1.2; color: var(--color-dark);
+            background-color: transparent; font-family: inherit;
+        }
+        :fullscreen body { padding: 2px; }
+        :-webkit-full-screen body { padding: 2px; }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <textarea id="editor" placeholder="Начните писать..."></textarea>
+    </div>
+    <script>s
+        const firebaseConfig = {
+            databaseURL: " https://rtn001-47f71-default-rtdb.firebaseio.com/"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const dbRef = firebase.database().ref('sharedText');
+        const editor = document.getElementById('editor');
+
+        dbRef.on('value', (snapshot) => {
+            if (snapshot.exists()) { editor.value = snapshot.val(); }
+        });
+
+        editor.addEventListener('input', (e) => {
+            dbRef.set(e.target.value);
+        });
+
+        let lastTap = 0;
+        document.addEventListener('click', function (event) {
+            const currentTime = new Date().getTime();
+            const tapLength = currentTime - lastTap;
+            if (tapLength < 300 && tapLength > 0) { toggleFullScreen(); event.preventDefault(); }
+            lastTap = currentTime;
+        });
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {  
+                if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+                else if (document.documentElement.webkitRequestFullscreen) { document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT); }
+            } else {
+                if (document.exitFullscreen) { document.exitFullscreen(); }
+                else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+            }
+        }
+    </script>
+</body>
+</html>
+
+
+Написать:
+Новое сообще
